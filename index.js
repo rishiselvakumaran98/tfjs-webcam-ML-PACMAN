@@ -145,7 +145,7 @@ async function predict() {
 
     // Determine the gesture that has the highest probability
     const gestureLabels = ['up','down', 'left', 'right'];
-    const maxIndex = predictions.indexOf(Math.max(...predictionsGesture));
+    const maxIndex = predictionsGesture.indexOf(Math.max(...predictionsGesture));
     const confidence = predictionsGesture[maxIndex]
     const gesture = gestureLabels[maxIndex]
 
@@ -208,6 +208,38 @@ async function init() {
   truncatedMobileNet.predict(screenShot.expandDims(0));
   screenShot.dispose();
 }
+
+//   ui.isPredicting();
+//   while (isPredicting) {
+//     // Capture a frame from the webcam.
+//     const img = await getImage();
+    
+//     // Get embeddings from the truncated MobileNet.
+//     const embeddings = truncatedMobileNet.predict(img);
+    
+//     // Use the classifier model to get predictions (probabilities for each gesture).
+//     const predictionsTensor = model.predict(embeddings);
+//     const predictionsGesture = await predictionsTensor.data();
+    
+//     const gestureLabels = ['up', 'down', 'left', 'right'];
+//     const maxIndex = predictionsGesture.indexOf(Math.max(...predictionsGesture));
+//     const confidence = predictionsGesture[maxIndex];
+//     const gesture = gestureLabels[maxIndex];
+    
+//     document.getElementById('confidence-display').innerText =
+//       `Gesture: ${gesture} (${(confidence * 100).toFixed(1)}%)`;
+    
+//     // Update the game state with the predicted gesture.
+//     ui.predictClass(maxIndex);
+    
+//     // Dispose tensors to free up memory.
+//     img.dispose();
+//     predictionsTensor.dispose();
+    
+//     await tf.nextFrame();
+//   }
+//   ui.donePredicting();
+// }
 
 // Initialize the application.
 init();

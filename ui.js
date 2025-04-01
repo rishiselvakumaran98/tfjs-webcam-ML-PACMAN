@@ -120,3 +120,33 @@ export function draw(image, canvas) {
   }
   ctx.putImageData(imageData, 0, 0);
 }
+
+export function getTrainingSettings() {
+  const modeElement = document.getElementById('training-mode');
+  const mode = modeElement.value;
+
+  switch (mode) {
+    case 'fast':
+      return {
+        learningRate: 0.0001,        
+        batchSizeFraction: 0.4,      // smaller batch for quick iterations
+        epochs: 10,                  // fewer epochs: lower accuracy, faster training
+        denseUnits: 10               // simpler model
+      };
+    case 'accurate':
+      return {
+        learningRate: 0.0001,        
+        batchSizeFraction: 1.0,      // larger batch for more robust updates
+        epochs: 40,                  // more epochs for better fitting of data
+        denseUnits: 200              // more complex model
+      };
+    case 'balanced':
+    default:
+      return {
+        learningRate: 0.0001,
+        batchSizeFraction: 0.4,      // Smaller batch
+        epochs: 20,                  // Moderate number of epochs
+        denseUnits: 100              // Slightly complex model
+      };
+  }
+}

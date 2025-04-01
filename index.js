@@ -66,6 +66,8 @@ async function train() {
     throw new Error('Add some examples before training!');
   }
 
+  const settings = ui.getTrainingSettings();
+
   // Creates a 2-layer fully connected model. By creating a separate model,
   // rather than adding layers to the mobilenet model, we "freeze" the weights
   // of the mobilenet model, and only train weights from the new model.
@@ -78,7 +80,7 @@ async function train() {
           {inputShape: truncatedMobileNet.outputs[0].shape.slice(1)}),
       // Layer 1.
       tf.layers.dense({
-        units: ui.getDenseUnits(),
+        units: settings.denseUnits,
         activation: 'relu',
         kernelInitializer: 'varianceScaling',
         useBias: true
@@ -95,7 +97,7 @@ async function train() {
   });
 
   // Creates the optimizers which drives training of the model.
-  const optimizer = tf.train.adam(ui.getLearningRate());
+  const optimizer = tf.train.adam(settings.learningRate);
   // We use categoricalCrossentropy which is the loss function we use for
   // categorical classification which measures the error between our predicted
   // probability distribution over classes (probability that an input is of each
@@ -106,7 +108,7 @@ async function train() {
   // number of examples that are collected depends on how many examples the user
   // collects. This allows us to have a flexible batch size.
   const batchSize =
-      Math.floor(controllerDataset.xs.shape[0] * ui.getBatchSizeFraction());
+      Math.floor(controllerDataset.xs.shape[0] * settings.batchSizeFraction);
   if (!(batchSize > 0)) {
     throw new Error(
         `Batch size is 0 or NaN. Please choose a non-zero fraction.`);
@@ -115,7 +117,7 @@ async function train() {
   // Train the model! Model.fit() will shuffle xs & ys so we don't have to.
   model.fit(controllerDataset.xs, controllerDataset.ys, {
     batchSize,
-    epochs: ui.getEpochs(),
+    epochs: settings.epochs,
     callbacks: {
       onBatchEnd: async (batch, logs) => {
         ui.trainStatus('Loss: ' + logs.loss.toFixed(5));
@@ -139,12 +141,23 @@ async function predict() {
     // Make a prediction through our newly-trained model using the embeddings
     // from mobilenet as input.
     const predictions = model.predict(embeddings);
+    const predictionsGesture = await predictions.data()
+
+    // Determine the gesture that has the highest probability
+    const gestureLabels = ['up','down', 'left', 'right'];
+    const maxIndex = predictions.indexOf(Math.max(...predictionsGesture));
+    const confidence = predictionsGesture[maxIndex]
+    const gesture = gestureLabels[maxIndex]
+
+    document.getElementById('confidence-display').innerText = `Gesture: ${gesture} (${(confidence * 100).toFixed(1)}%)`
+    ui.predictClass(maxIndex)
 
     // Returns the index with the maximum probability. This number corresponds
     // to the class the model thinks is the most probable given the input.
     const predictedClass = predictions.as1D().argMax();
     const classId = (await predictedClass.data())[0];
     img.dispose();
+    predictions.dispose();
 
     ui.predictClass(classId);
     await tf.nextFrame();

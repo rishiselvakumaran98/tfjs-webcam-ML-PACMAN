@@ -190,6 +190,22 @@ document.getElementById('predict').addEventListener('click', () => {
   predict();
 });
 
+document.getElementById('up-redo').addEventListener('click', () => {
+  ui.redoExample(0); // up
+});
+
+document.getElementById('down-redo').addEventListener('click', () => {
+  ui.redoExample(1); // down
+});
+
+document.getElementById('left-redo').addEventListener('click', () => {
+  ui.redoExample(2); // left
+});
+
+document.getElementById('right-redo').addEventListener('click', () => {
+  ui.redoExample(3); // right
+});
+
 async function init() {
   try {
     webcam = await tfd.webcam(document.getElementById('webcam'));
@@ -208,38 +224,6 @@ async function init() {
   truncatedMobileNet.predict(screenShot.expandDims(0));
   screenShot.dispose();
 }
-
-//   ui.isPredicting();
-//   while (isPredicting) {
-//     // Capture a frame from the webcam.
-//     const img = await getImage();
-    
-//     // Get embeddings from the truncated MobileNet.
-//     const embeddings = truncatedMobileNet.predict(img);
-    
-//     // Use the classifier model to get predictions (probabilities for each gesture).
-//     const predictionsTensor = model.predict(embeddings);
-//     const predictionsGesture = await predictionsTensor.data();
-    
-//     const gestureLabels = ['up', 'down', 'left', 'right'];
-//     const maxIndex = predictionsGesture.indexOf(Math.max(...predictionsGesture));
-//     const confidence = predictionsGesture[maxIndex];
-//     const gesture = gestureLabels[maxIndex];
-    
-//     document.getElementById('confidence-display').innerText =
-//       `Gesture: ${gesture} (${(confidence * 100).toFixed(1)}%)`;
-    
-//     // Update the game state with the predicted gesture.
-//     ui.predictClass(maxIndex);
-    
-//     // Dispose tensors to free up memory.
-//     img.dispose();
-//     predictionsTensor.dispose();
-    
-//     await tf.nextFrame();
-//   }
-//   ui.donePredicting();
-// }
 
 // Initialize the application.
 init();

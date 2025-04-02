@@ -374,3 +374,19 @@ button#predict{
   padding: 30px;
   line-height: 30px;
 }
+
+.redo-button {
+  background-color: #ffcc00; /* Bright yellow highlight */
+  color: #000; /* Black text for good color contrast with yellow */
+  border: 2px solid #333; /* Dark border to outline the button */
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.redo-button:hover {
+  background-color: #ffd633; /* gets triggered when user hovers over button */
+}

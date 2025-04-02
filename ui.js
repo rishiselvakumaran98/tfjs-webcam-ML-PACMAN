@@ -15,14 +15,21 @@
  * =============================================================================
  */
 import * as tf from '@tensorflow/tfjs';
+import {ControllerDataset} from './controller_dataset';
 
 const CONTROLS = ['up', 'down', 'left', 'right'];
 const CONTROL_CODES = [38, 40, 37, 39];
+// The number of classes we want to predict. In this example, we will be
+// predicting 4 classes for up, down, left, and right.
+const NUM_CLASSES = 4;
 
 export function init() {
   document.getElementById('controller').style.display = '';
   statusElement.style.display = 'none';
 }
+
+// The dataset object where we will store activations.
+const controllerDataset = new ControllerDataset(NUM_CLASSES);
 
 const trainStatusElement = document.getElementById('train-status');
 
@@ -149,4 +156,23 @@ export function getTrainingSettings() {
         denseUnits: 100              // Slightly complex model
       };
   }
+}
+
+export function redoExample(labelIndex) {
+  const controlName = CONTROLS[labelIndex];
+  const canvas = document.getElementById(controlName + '-thumb');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  totals[labelIndex] = 0;
+  const totalEl = document.getElementById(controlName + '-total');
+  if (totalEl) {
+    totalEl.innerText = '0';
+  }
+  
+  thumbDisplayed[labelIndex] = null;
+
+  // Remove training examples for this label.
+  controllerDataset.clearExamplesForLabel(labelIndex);
 }
